@@ -12248,19 +12248,6 @@ noscript {
   &__avatar {
     flex-shrink: 0;
     line-height: 0;
-    position: relative;
-
-    // Milestone ring — tertiary colour outline around avatar
-    &--milestone {
-      &::after {
-        content: '';
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        border: 2px solid $gold-star;
-        pointer-events: none;
-      }
-    }
   }
 
   &__body {
@@ -12277,15 +12264,27 @@ noscript {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 
     a {
       color: $primary-text-color;
       text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover {
         text-decoration: underline;
       }
     }
+  }
+
+  &__milestone-star {
+    color: $gold-star;
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
   }
 
   &__meta {

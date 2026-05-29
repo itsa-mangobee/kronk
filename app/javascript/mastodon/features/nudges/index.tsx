@@ -148,7 +148,7 @@ const NudgePartnerItem: React.FC<{
 
   return (
     <div className={`nudge-partner-item${canNudge ? ' nudge-partner-item--active' : ''}`}>
-      <Link to={`/@${account.acct}`} className={`nudge-partner-item__avatar${isMilestone ? ' nudge-partner-item__avatar--milestone' : ''}`}>
+      <Link to={`/@${account.acct}`} className='nudge-partner-item__avatar'>
         <Avatar account={account} size={46} />
       </Link>
 
@@ -157,6 +157,7 @@ const NudgePartnerItem: React.FC<{
           <Link to={`/@${account.acct}`}>
             <DisplayName account={account} />
           </Link>
+          {isMilestone && <span className='nudge-partner-item__milestone-star' aria-label='milestone'>★</span>}
         </div>
 
         <div className='nudge-partner-item__meta'>
