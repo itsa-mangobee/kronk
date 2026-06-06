@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 import { Helmet } from 'react-helmet';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 import AddPhotoIcon from '@/material-icons/400-24px/add_photo_alternate.svg?react';
 import ArrowUpwardIcon from '@/material-icons/400-24px/arrow_upward-fill.svg?react';
@@ -445,8 +445,14 @@ const messages = defineMessages({
   },
 });
 
+interface NudgeLocationState {
+  attachStatusUrl?: string;
+  attachStatusBody?: string | null;
+}
+
 const NudgesThread: React.FC<{ multiColumn?: boolean }> = ({ multiColumn }) => {
   const { accountId = '' } = useParams<{ accountId: string }>();
+  const location = useLocation<NudgeLocationState>();
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const columnRef = useRef<ColumnRef>(null);
@@ -469,8 +475,18 @@ const NudgesThread: React.FC<{ multiColumn?: boolean }> = ({ multiColumn }) => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
+  // Attached status from "nudge on post" navigation
+  // location.state is typed as NudgeLocationState but is undefined when navigating directly
+  const navState = location.state as NudgeLocationState | undefined;
+  const [attachedStatusUrl] = useState<string | undefined>(
+    navState?.attachStatusUrl,
+  );
+  const [attachedStatusBody] = useState<string | null | undefined>(
+    navState?.attachStatusBody,
+  );
+
   // Compose state
-  const [text, setText] = useState('');
+  const [text, setText] = useState(navState?.attachStatusUrl ?? '');
   const [mediaId, setMediaId] = useState<string | undefined>();
   const [mediaPreview, setMediaPreview] = useState<string | undefined>();
   const [mediaIsVideo, setMediaIsVideo] = useState(false);
@@ -922,6 +938,22 @@ const NudgesThread: React.FC<{ multiColumn?: boolean }> = ({ multiColumn }) => {
               defaultMessage='{count} of {limit} — they need to reply before you can send more'
               values={{ count: consecutiveSent, limit: CONSECUTIVE_LIMIT }}
             />
+          </div>
+        )}
+
+        {attachedStatusUrl && (
+          <div className='nudge-compose-bar__post-share'>
+            <span className='nudge-compose-bar__post-share__label'>
+              <FormattedMessage
+                id='nudges.thread.sharing_post'
+                defaultMessage='Sharing post'
+              />
+            </span>
+            {attachedStatusBody && (
+              <span className='nudge-compose-bar__post-share__body'>
+                {attachedStatusBody}
+              </span>
+            )}
           </div>
         )}
 

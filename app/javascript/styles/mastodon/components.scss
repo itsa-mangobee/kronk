@@ -13153,12 +13153,15 @@ noscript {
   0% {
     transform: scale(1);
   }
+
   40% {
     transform: scale(1.35);
   }
+
   70% {
     transform: scale(0.9);
   }
+
   100% {
     transform: scale(1);
   }
@@ -13181,6 +13184,7 @@ noscript {
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.25;
   }
@@ -13869,6 +13873,35 @@ noscript {
     width: 16px;
     height: 16px;
     color: $gold-star;
+  }
+}
+
+// ── Post-share banner ────────────────────────────────────────────────────────
+
+.nudge-compose-bar__post-share {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 12px;
+  margin: 0 8px 4px;
+  border-left: 3px solid $highlight-text-color;
+  border-radius: 0 6px 6px 0;
+  background: rgba($highlight-text-color, 0.06);
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: $highlight-text-color;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__body {
+    font-size: 12px;
+    color: $secondary-text-color;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 

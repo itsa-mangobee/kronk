@@ -16,7 +16,6 @@ import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import HeartIcon from '@/material-icons/400-24px/favorite-fill.svg?react';
 import HeartBorderIcon from '@/material-icons/400-24px/favorite.svg?react';
-import { openModal } from 'mastodon/actions/modal';
 import { identityContextPropShape, withIdentity } from 'mastodon/identity_context';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
 import { WithRouterPropTypes } from 'mastodon/utils/react_router';
@@ -76,14 +75,6 @@ const mapStateToProps = (state, { status }) => {
   });
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  onNudge: (accountId) => {
-    dispatch(openModal({
-      modalType: 'NUDGE_COMPOSE',
-      modalProps: { accountId },
-    }));
-  },
-});
 
 class StatusActionBar extends ImmutablePureComponent {
   static propTypes = {
@@ -114,7 +105,6 @@ class StatusActionBar extends ImmutablePureComponent {
     onFilter: PropTypes.func,
     onAddFilter: PropTypes.func,
     onInteractionModal: PropTypes.func,
-    onNudge: PropTypes.func,
     withDismiss: PropTypes.bool,
     withCounters: PropTypes.bool,
     scrollKey: PropTypes.string,
@@ -261,8 +251,15 @@ class StatusActionBar extends ImmutablePureComponent {
   };
 
   handleNudgeClick = () => {
-    const accountId = this.props.status.getIn(['account', 'id']);
-    this.props.onNudge(accountId);
+    const { status } = this.props;
+    const accountId = status.getIn(['account', 'id']);
+    const statusUrl = status.get('url');
+    const rawBody = (status.get('content') ?? '').replace(/<[^>]*>/g, '');
+    const statusBody = rawBody.length > 80 ? `${rawBody.slice(0, 80)}…` : rawBody;
+    this.props.history.push(`/nudges/${accountId}`, {
+      attachStatusUrl: statusUrl,
+      attachStatusBody: statusBody || null,
+    });
   };
 
   render () {
@@ -448,4 +445,4 @@ class StatusActionBar extends ImmutablePureComponent {
 
 }
 
-export default withRouter(withIdentity(connect(mapStateToProps, mapDispatchToProps)(injectIntl(StatusActionBar))));
+export default withRouter(withIdentity(connect(mapStateToProps)(injectIntl(StatusActionBar))));

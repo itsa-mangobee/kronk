@@ -810,6 +810,7 @@
   "nudges.thread.expired": "This message has expired",
   "nudges.thread.milestone": "{count} nudges!",
   "nudges.thread.seen": "Seen",
+  "nudges.thread.sharing_post": "Sharing post",
   "nudges.thread.waiting": "Waiting for them to nudge back…",
   "nudges.thread.you_nudged": "You nudged",
   "nudges.title": "Nudges",
