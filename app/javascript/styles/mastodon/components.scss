@@ -13150,10 +13150,18 @@ noscript {
 }
 
 @keyframes nudge-streak-bump {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.35); }
-  70%  { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes nudge-bubble-in {
@@ -13169,8 +13177,13 @@ noscript {
 }
 
 @keyframes nudge-record-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
 }
 
 // ── Message bubbles ───────────────────────────────────────────────────────────
@@ -13596,7 +13609,9 @@ noscript {
     justify-content: center;
     width: 36px;
     height: 36px;
-    transition: background 0.1s, color 0.1s;
+    transition:
+      background 0.1s,
+      color 0.1s;
 
     svg {
       width: 20px;
@@ -13839,7 +13854,11 @@ noscript {
   justify-content: center;
   gap: 8px;
   padding: 8px 16px;
-  background: linear-gradient(90deg, rgba($highlight-text-color, 0.12), rgba($gold-star, 0.12));
+  background: linear-gradient(
+    90deg,
+    rgba($highlight-text-color, 0.12),
+    rgba($gold-star, 0.12)
+  );
   border-bottom: 1px solid rgba($highlight-text-color, 0.2);
   font-size: 13px;
   font-weight: 600;
@@ -13850,6 +13869,64 @@ noscript {
     width: 16px;
     height: 16px;
     color: $gold-star;
+  }
+}
+
+// ── Emoji picker ─────────────────────────────────────────────────────────────
+
+.nudge-emoji-picker {
+  position: relative;
+  display: inline-flex;
+}
+
+.nudge-bubble__react-btn--add {
+  font-size: 13px;
+  font-weight: 600;
+  color: $secondary-text-color;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .nudge-bubble:hover & {
+    opacity: 1;
+  }
+}
+
+.nudge-emoji-picker__popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  padding: 8px;
+  background: $ui-base-color;
+  border: 1px solid lighten($ui-base-color, 8%);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba($base-shadow-color, 0.4);
+  width: 220px;
+}
+
+.nudge-emoji-picker__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: background 0.1s;
+
+  &:hover {
+    background: lighten($ui-base-color, 10%);
+  }
+
+  &--me {
+    background: rgba($highlight-text-color, 0.15);
   }
 }
 

@@ -259,8 +259,9 @@ class Api::V1::AccountsController < Api::BaseController
     messages = notifications.map do |n|
       msg = n.nudge_message
       my_emoji = my_reactions[n.id]&.emoji
-      reactions = NudgeReaction::ALLOWED_EMOJI.index_with do |emoji|
-        { count: reaction_counts[[n.id, emoji]] || 0, me: my_emoji == emoji }
+      emoji_counts = reaction_counts.select { |(nid, _), _| nid == n.id }
+      reactions = emoji_counts.each_with_object({}) do |((_, emoji), count), hash|
+        hash[emoji] = { count: count, me: my_emoji == emoji }
       end
 
       reply_msg = msg&.in_reply_to_notification&.nudge_message

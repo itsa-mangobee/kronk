@@ -6,8 +6,9 @@ class Api::V1::NudgeReactionsController < Api::BaseController
   before_action :set_notification
 
   def create
-    emoji = params[:emoji]
-    return render json: { error: 'Invalid emoji' }, status: 422 unless NudgeReaction::ALLOWED_EMOJI.include?(emoji)
+    emoji = params[:emoji].to_s.strip
+    return render json: { error: 'Emoji required' }, status: 422 if emoji.blank?
+    return render json: { error: 'Invalid emoji' }, status: 422 if emoji.length > 8
 
     NudgeReaction.find_or_create_by!(
       notification: @notification,
@@ -34,8 +35,8 @@ class Api::V1::NudgeReactionsController < Api::BaseController
   def reactions_json
     counts = NudgeReaction.where(notification: @notification).group(:emoji).count
     me = NudgeReaction.find_by(notification: @notification, account: current_user.account)&.emoji
-    NudgeReaction::ALLOWED_EMOJI.index_with do |emoji|
-      { count: counts[emoji] || 0, me: me == emoji }
+    counts.each_with_object({}) do |(emoji, count), hash|
+      hash[emoji] = { count: count, me: me == emoji }
     end
   end
 end

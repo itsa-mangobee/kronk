@@ -45,7 +45,6 @@ export const apiNudgeAccount = (
   params?: {
     text?: string;
     media_id?: string;
-    voice_id?: string;
     in_reply_to_notification_id?: string;
   },
 ) =>
