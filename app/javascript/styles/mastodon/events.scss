@@ -2204,12 +2204,14 @@ $ev-interested-color: #b8945f;
     display: flex;
     align-items: center;
     gap: 2px;
+    color: rgb(255 255 255 / 85%);
   }
 
   &__celestial-popup {
-    position: absolute;
-    top: 100%;
-    right: 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 100;
     width: 220px;
     background: color-mix(in srgb, var(--space-color, #343070) 30%, #0d0d1a);

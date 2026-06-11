@@ -7,6 +7,13 @@ class NudgeMessage < ApplicationRecord
   belongs_to :in_reply_to_notification, class_name: 'Notification', optional: true
 
   MAX_WORDS = 100
+  EXPIRY_HOURS = 24
+
+  scope :not_expired, -> { where('expires_at IS NULL OR expires_at > ?', Time.current) }
+
+  def expired?
+    expires_at.present? && expires_at <= Time.current
+  end
 
   validate :word_count_within_limit
 

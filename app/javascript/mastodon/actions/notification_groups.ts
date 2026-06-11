@@ -247,6 +247,9 @@ export const setUnreadNudgeCount = createAction<number>(
 export const decrementNudgeCount = createAction(
   'notificationGroups/decrementNudgeCount',
 );
+export const incrementNudgeCount = createAction(
+  'notificationGroups/incrementNudgeCount',
+);
 
 export const fetchInitialNudgeCount = createAppAsyncThunk(
   'notificationGroups/fetchInitialNudgeCount',

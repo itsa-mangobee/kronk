@@ -95,7 +95,19 @@ export const handlePush = (event) => {
       options.image     = notification.status && notification.status.media_attachments.length > 0 && notification.status.media_attachments[0].preview_url || undefined;
       options.data      = { access_token, preferred_locale, id: notification.status ? notification.status.id : notification.account.id };
 
-      if (notification.status) {
+      if (notification.type === 'nudge') {
+        options.data.url = `/nudges/${notification.account.id}`;
+        const msg = notification.nudge_message;
+        if (msg && msg.body) {
+          options.body = msg.body;
+        } else if (msg && msg.voice_url) {
+          options.body = '🎤 Voice message';
+        } else if (msg && msg.media_url) {
+          options.body = '🖼️ Image';
+        } else {
+          options.body = '👋';
+        }
+      } else if (notification.status) {
         options.data.url = `/@${notification.status.account.acct}/${notification.status.id}`;
       } else {
         options.data.url = `/@${notification.account.acct}`;

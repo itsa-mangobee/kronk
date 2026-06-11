@@ -10,7 +10,7 @@ import {
   deleteAnnouncement,
 } from './announcements';
 import { updateConversations } from './conversations';
-import { processNewNotificationForGroups, refreshStaleNotificationGroups, pollRecentNotifications as pollRecentGroupNotifications } from './notification_groups';
+import { processNewNotificationForGroups, refreshStaleNotificationGroups, pollRecentNotifications as pollRecentGroupNotifications, incrementNudgeCount } from './notification_groups';
 import { updateNotifications } from './notifications';
 import { updateStatus } from './statuses';
 import {
@@ -116,6 +116,9 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
           // bell alert, sound, and old notifications state for them.
           if (notificationJSON.type !== 'nudge') {
             dispatch(updateNotifications(notificationJSON, messages, locale));
+          } else {
+            // Directly increment so the thread reloads regardless of filter settings.
+            dispatch(incrementNudgeCount());
           }
           // TODO: remove this once the groups feature replaces the previous one
           dispatch(processNewNotificationForGroups(notificationJSON));

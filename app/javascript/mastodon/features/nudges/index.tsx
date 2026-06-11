@@ -12,7 +12,7 @@ import {
   decrementNudgeCount,
   setUnreadNudgeCount,
 } from 'mastodon/actions/notification_groups';
-import { apiGetNudgePartners } from 'mastodon/api/accounts';
+import { apiGetNudgePartners, apiNudgeAccount } from 'mastodon/api/accounts';
 import type {
   ApiNudgeLastMessage,
   ApiNudgePartner,
@@ -41,6 +41,14 @@ const messages = defineMessages({
   previewVoice: { id: 'nudges.preview.voice', defaultMessage: 'Voice memo' },
   previewNudge: { id: 'nudges.preview.nudge', defaultMessage: 'Nudged' },
   dismiss: { id: 'nudges.alert.dismiss', defaultMessage: 'Dismiss' },
+  nudgeAllBack: {
+    id: 'nudges.nudge_all_back',
+    defaultMessage: 'Nudge all back',
+  },
+  nudgeAllBackDone: {
+    id: 'nudges.nudge_all_back_done',
+    defaultMessage: 'Done!',
+  },
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -326,7 +334,10 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
   const [totalSent, setTotalSent] = useState(0);
   const [totalReceived, setTotalReceived] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [alerts, setAlerts] = useState<NudgeAlertData[]>([]);
+  const [nudgingAll, setNudgingAll] = useState(false);
+  const [nudgedAll, setNudgedAll] = useState(false);
 
   const previewImage = intl.formatMessage(messages.previewImage);
   const previewVideo = intl.formatMessage(messages.previewVideo);
@@ -355,6 +366,9 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
       setTotalSent(data.total_sent);
       setTotalReceived(data.total_received);
       dispatch(setUnreadNudgeCount(data.pending_count));
+      setLoadError(false);
+    } catch {
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -362,6 +376,16 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  // Fallback poll — keeps inbox fresh if streaming misses an event
+  useEffect(() => {
+    const id = setInterval(() => {
+      void load();
+    }, 15000);
+    return () => {
+      clearInterval(id);
+    };
   }, [load]);
 
   useEffect(() => {
@@ -397,6 +421,30 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
   const handleHeaderClick = useCallback(() => {
     columnRef.current?.scrollTop();
   }, []);
+
+  const handleNudgeAllBack = useCallback(() => {
+    const pending = partners.filter(
+      (p) => p.can_nudge_back && p.last_message.direction === 'received',
+    );
+    if (pending.length === 0 || nudgingAll || nudgedAll) return;
+    setNudgingAll(true);
+    void (async () => {
+      for (const p of pending) {
+        try {
+          await apiNudgeAccount(p.account_id);
+          dispatch(decrementNudgeCount());
+        } catch {
+          // skip failed individual nudges
+        }
+      }
+      setNudgingAll(false);
+      setNudgedAll(true);
+      setTimeout(() => {
+        setNudgedAll(false);
+      }, 3000);
+      void load();
+    })();
+  }, [partners, nudgingAll, nudgedAll, dispatch, load]);
 
   // Sort conversations by most recent activity
   const sortedPartners = [...partners].sort((a, b) => {
@@ -485,6 +533,21 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
                 </>
               )}
             </div>
+            {unreadCount > 0 && (
+              <div className='nudge-grand-total__actions'>
+                <Button
+                  compact
+                  disabled={nudgingAll || nudgedAll}
+                  onClick={handleNudgeAllBack}
+                >
+                  {nudgedAll
+                    ? intl.formatMessage(messages.nudgeAllBackDone)
+                    : nudgingAll
+                      ? '…'
+                      : intl.formatMessage(messages.nudgeAllBack)}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -494,16 +557,41 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
           </div>
         )}
 
-        {!loading && partners.length === 0 && suggestions.length === 0 && (
+        {!loading && loadError && (
           <div className='empty-column-indicator'>
             <FormattedMessage
-              id='nudges.empty'
-              defaultMessage='No nudges yet. Go nudge someone!'
+              id='nudges.error'
+              defaultMessage='Could not load nudges. Try refreshing.'
             />
           </div>
         )}
 
-        {!loading && sortedPartners.length > 0 && (
+        {!loading &&
+          !loadError &&
+          partners.length === 0 &&
+          suggestions.length === 0 && (
+            <div className='nudge-empty-state'>
+              <Icon
+                icon={PartnerExchangeActiveIcon}
+                id='partner_exchange'
+                className='nudge-empty-state__icon'
+              />
+              <p className='nudge-empty-state__title'>
+                <FormattedMessage
+                  id='nudges.empty_title'
+                  defaultMessage='No nudges yet'
+                />
+              </p>
+              <p className='nudge-empty-state__body'>
+                <FormattedMessage
+                  id='nudges.empty_body'
+                  defaultMessage='Nudge someone to start a conversation. Find people to follow first if this list is empty.'
+                />
+              </p>
+            </div>
+          )}
+
+        {!loading && !loadError && sortedPartners.length > 0 && (
           <div className='nudge-conv-list'>
             {sortedPartners.map((partner) => (
               <ConversationRow
@@ -518,7 +606,7 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
           </div>
         )}
 
-        {!loading && suggestions.length > 0 && (
+        {!loading && !loadError && suggestions.length > 0 && (
           <>
             <div className='nudge-section-header nudge-section-header--suggestions'>
               <FormattedMessage
@@ -526,7 +614,7 @@ export const NudgesPage: React.FC<{ multiColumn?: boolean }> = ({
                 defaultMessage='NUDGE SOMEONE'
               />
             </div>
-            {suggestions.map((s) => (
+            {suggestions.slice(0, 3).map((s) => (
               <SuggestionRow key={s.account_id} suggestion={s} />
             ))}
           </>

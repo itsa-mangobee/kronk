@@ -157,7 +157,7 @@ export const EditForm: React.FC<Props> = ({ set, onSuccess, onCancel }) => {
             artist_name: artistName,
             genres,
             cover_offset_y: coverOffsetY,
-            event_id: eventId,
+            event_id: eventId ?? '',
           };
           if (eventName) payload.event_name = eventName;
           if (eventDate) payload.event_date = eventDate;

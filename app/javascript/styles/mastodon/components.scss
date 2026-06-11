@@ -12225,59 +12225,72 @@ noscript {
 // Grand total stat banner
 .nudge-grand-total {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 14px 15px 12px;
+  gap: 10px;
+  padding: 8px 15px;
   border-bottom: 1px solid lighten($ui-base-color, 8%);
-  background: lighten($ui-base-color, 4%);
+  background: lighten($ui-base-color, 2%);
 
-  &__label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: $dark-text-color;
-    margin-bottom: 4px;
+  &__headline {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    flex-shrink: 0;
   }
 
   &__count {
-    font-size: 28px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1;
     color: $highlight-text-color;
   }
 
-  &__divider {
-    width: 100%;
-    height: 1px;
-    background: lighten($ui-base-color, 8%);
-    margin: 10px 0 8px;
+  &__label {
+    font-size: 11px;
+    font-weight: 500;
+    color: $dark-text-color;
+    white-space: nowrap;
   }
 
+  &__divider {
+    width: 1px;
+    height: 16px;
+    background: lighten($ui-base-color, 12%);
+    flex-shrink: 0;
+  }
+
+  &__breakdown {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+
+  // legacy alias kept for backwards-compat
   &__stats {
     display: flex;
     align-items: center;
     gap: 0;
-    width: 100%;
-    justify-content: center;
+    flex: 1;
   }
 
   &__stat {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: baseline;
+    gap: 4px;
     flex: 1;
+    justify-content: center;
   }
 
   &__stat-divider {
     width: 1px;
-    height: 32px;
+    height: 20px;
     background: lighten($ui-base-color, 8%);
+    flex-shrink: 0;
   }
 
   &__stat-number {
-    font-size: 22px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 1;
 
@@ -12288,15 +12301,23 @@ noscript {
     &--received {
       color: $gold-star;
     }
+
+    &--new {
+      color: $ui-highlight-color;
+    }
   }
 
   &__stat-label {
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: $dark-text-color;
-    margin-top: 3px;
+  }
+
+  &__actions {
+    flex-shrink: 0;
+    margin-inline-start: auto;
   }
 }
 
@@ -12921,6 +12942,1149 @@ noscript {
   width: 100%;
   max-width: 280px;
   height: 36px;
+}
+
+// ── Conversation list (inbox) ─────────────────────────────────────────────────
+
+.nudge-conv-list {
+  // container — no extra rules needed
+}
+
+.nudge-conv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-bottom: 1px solid lighten($ui-base-color, 8%);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.1s;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: lighten($ui-base-color, 4%);
+    text-decoration: none;
+  }
+
+  &--unread {
+    background: mix($highlight-text-color, $ui-base-color, 5%);
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    position: relative;
+    line-height: 0;
+  }
+
+  &__unread-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: $highlight-text-color;
+    border: 2px solid $ui-base-color;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__top {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  &__name {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $primary-text-color;
+
+    .display-name__tag {
+      display: none;
+    }
+  }
+
+  &__time {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: $dark-text-color;
+  }
+
+  &__bottom {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__preview {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: $dark-text-color;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--unread {
+      font-weight: 600;
+      color: $primary-text-color;
+    }
+  }
+
+  &__streak {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    color: $highlight-text-color;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  &__action {
+    flex-shrink: 0;
+  }
+}
+
+// ── Thread layout ─────────────────────────────────────────────────────────────
+
+.nudge-thread {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  // Loading and empty states should fill remaining space so compose bar stays at bottom
+  > .loading-indicator,
+  > .empty-column-indicator {
+    flex: 1;
+  }
+
+  &__messages {
+    flex: 1 1 0;
+    overflow-y: auto;
+    padding: 16px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.nudge-thread-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-bottom: 1px solid lighten($ui-base-color, 8%);
+  background: lighten($ui-base-color, 2%);
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__name {
+    font-size: 15px;
+    font-weight: 600;
+    color: $primary-text-color;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__acct {
+    font-size: 12px;
+    color: $dark-text-color;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__streak {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: $highlight-text-color;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba($highlight-text-color, 0.1);
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    &--bump {
+      animation: nudge-streak-bump 0.4s ease;
+    }
+  }
+}
+
+@keyframes nudge-streak-bump {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.35);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes nudge-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nudge-record-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+// ── Message bubbles ───────────────────────────────────────────────────────────
+
+.nudge-bubble {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 2px 16px;
+
+  &--sent {
+    flex-direction: row-reverse;
+
+    .nudge-bubble__content {
+      background: $highlight-text-color;
+      border-bottom-right-radius: 4px;
+    }
+
+    .nudge-bubble__text {
+      color: darken($ui-base-color, 4%);
+    }
+
+    .nudge-bubble__time {
+      color: rgba(darken($ui-base-color, 4%), 0.65);
+    }
+
+    .nudge-bubble__reactions {
+      justify-content: flex-end;
+    }
+
+    .nudge-bubble__react-btn {
+      background: rgba(0, 0, 0, 12%);
+      border-color: rgba(0, 0, 0, 18%);
+      color: darken($ui-base-color, 4%);
+
+      &--me {
+        background: rgba(0, 0, 0, 28%);
+        border-color: rgba(0, 0, 0, 40%);
+      }
+    }
+  }
+
+  &--received {
+    .nudge-bubble__content {
+      background: lighten($ui-base-color, 8%);
+      border-bottom-left-radius: 4px;
+    }
+
+    .nudge-bubble__text {
+      color: $primary-text-color;
+    }
+
+    .nudge-bubble__time {
+      color: $dark-text-color;
+    }
+
+    .nudge-bubble__reactions {
+      justify-content: flex-start;
+    }
+
+    .nudge-bubble__react-btn {
+      background: lighten($ui-base-color, 4%);
+      border-color: lighten($ui-base-color, 16%);
+      color: $primary-text-color;
+
+      &--me {
+        background: rgba($highlight-text-color, 0.15);
+        border-color: $highlight-text-color;
+      }
+    }
+  }
+
+  &--new {
+    animation: nudge-bubble-in 0.2s ease-out;
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  &__content {
+    max-width: 72%;
+    border-radius: 18px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__text {
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    margin: 0;
+  }
+
+  &__img,
+  &__video {
+    display: block;
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  &__audio {
+    display: block;
+    width: 100%;
+    min-width: 180px;
+    height: 36px;
+  }
+
+  &__time {
+    font-size: 10px;
+    opacity: 0.75;
+    align-self: flex-end;
+    white-space: nowrap;
+  }
+
+  &__reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 2px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.15s ease;
+
+    &--active {
+      max-height: 80px;
+    }
+  }
+
+  &__react-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 2px 7px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.1s;
+
+    &:hover {
+      filter: brightness(1.15);
+    }
+  }
+
+  &__react-count {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+    flex-wrap: wrap;
+  }
+
+  &__expiry {
+    font-size: 10px;
+    color: $gold-star;
+    opacity: 0.85;
+    white-space: nowrap;
+  }
+
+  &__seen {
+    font-size: 10px;
+    color: $highlight-text-color;
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+
+  &__tick {
+    font-size: 11px;
+    color: $dark-text-color;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  &__expired {
+    font-size: 13px;
+    font-style: italic;
+    color: $dark-text-color;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  &__reply-btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $dark-text-color;
+    font-size: 15px;
+    padding: 4px;
+    flex-shrink: 0;
+    align-self: center;
+    line-height: 1;
+    border-radius: 50%;
+
+    &:hover {
+      color: $highlight-text-color;
+      background: rgba($highlight-text-color, 0.1);
+    }
+  }
+
+  &:hover &__reply-btn {
+    opacity: 1;
+  }
+
+  &--expired &__content {
+    opacity: 0.6;
+  }
+}
+
+// ── Reply quote ───────────────────────────────────────────────────────────────
+
+.nudge-reply-quote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border-left: 3px solid $highlight-text-color;
+  background: rgba($highlight-text-color, 0.1);
+  margin-bottom: 4px;
+  max-width: 100%;
+  overflow: hidden;
+
+  &--sent {
+    border-left-color: rgba(0, 0, 0, 25%);
+    background: rgba(0, 0, 0, 10%);
+  }
+
+  &__icon {
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    font-size: 12px;
+    color: $dark-text-color;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ── Plain nudge ping (no message) ─────────────────────────────────────────────
+
+.nudge-ping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 24px;
+  font-size: 12px;
+  color: $dark-text-color;
+
+  svg {
+    width: 13px;
+    height: 13px;
+    opacity: 0.55;
+  }
+
+  &__time {
+    font-size: 11px;
+    color: $dark-text-color;
+    opacity: 0.6;
+  }
+}
+
+// ── Compose bar ───────────────────────────────────────────────────────────────
+
+.nudge-compose-bar {
+  flex-shrink: 0;
+  border-top: 1px solid lighten($ui-base-color, 8%);
+  background: $ui-base-color;
+
+  &--disabled {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  &__waiting {
+    padding: 6px 16px;
+    font-size: 12px;
+    font-style: italic;
+    color: $dark-text-color;
+    text-align: center;
+    border-bottom: 1px solid lighten($ui-base-color, 8%);
+    background: lighten($ui-base-color, 2%);
+  }
+
+  &__limit {
+    padding: 5px 16px;
+    font-size: 11px;
+    color: $gold-star;
+    text-align: center;
+    border-bottom: 1px solid rgba($gold-star, 0.2);
+    background: rgba($gold-star, 0.05);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__error {
+    padding: 6px 16px;
+    font-size: 12px;
+    color: $error-red;
+    text-align: center;
+    border-bottom: 1px solid rgba($error-red, 0.25);
+    background: rgba($error-red, 0.05);
+  }
+
+  &__reply-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: lighten($ui-base-color, 4%);
+    border-bottom: 1px solid lighten($ui-base-color, 10%);
+  }
+
+  &__reply-dismiss {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $dark-text-color;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+
+    &:hover {
+      color: $primary-text-color;
+    }
+  }
+
+  &__attachments {
+    padding: 8px 12px 0;
+  }
+
+  &__attachment-preview {
+    position: relative;
+    display: inline-block;
+  }
+
+  &__media-preview {
+    display: block;
+    max-height: 90px;
+    max-width: 140px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  &__remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 60%);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(0, 0, 0, 85%);
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    background: lighten($ui-base-color, 8%);
+    border: 1px solid lighten($ui-base-color, 14%);
+    border-radius: 20px;
+    color: $primary-text-color;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 8px 14px;
+    resize: none;
+    max-height: 120px;
+    overflow-y: auto;
+
+    &:focus {
+      outline: none;
+      border-color: lighten($ui-base-color, 24%);
+    }
+
+    &::placeholder {
+      color: $dark-text-color;
+    }
+
+    &--over {
+      border-color: $error-red;
+    }
+  }
+
+  &__icon-btn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: $dark-text-color;
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    transition:
+      background 0.1s,
+      color 0.1s;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover:not(:disabled) {
+      background: lighten($ui-base-color, 8%);
+      color: $primary-text-color;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    &--send {
+      background: $highlight-text-color;
+      color: darken($ui-base-color, 4%);
+
+      &:hover:not(:disabled) {
+        background: lighten($highlight-text-color, 6%);
+        color: darken($ui-base-color, 4%);
+      }
+    }
+
+    &--sending {
+      opacity: 0.6;
+    }
+  }
+}
+
+// ── Voice recording ───────────────────────────────────────────────────────────
+
+.nudge-voice-recording {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+
+  &__dot {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $error-red;
+    animation: nudge-record-pulse 1s ease-in-out infinite;
+  }
+
+  &__timer {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: $dark-text-color;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  &__stop {
+    flex-shrink: 0;
+    background: $error-red;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: darken($error-red, 8%);
+    }
+  }
+}
+
+// ── Voice pre-send preview ────────────────────────────────────────────────────
+
+.nudge-voice-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+
+  &__play {
+    flex-shrink: 0;
+    background: $highlight-text-color;
+    border: none;
+    border-radius: 50%;
+    color: darken($ui-base-color, 4%);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      background: lighten($highlight-text-color, 6%);
+    }
+  }
+
+  &__dur {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: $dark-text-color;
+    min-width: 28px;
+    text-align: right;
+  }
+
+  &__del {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: $dark-text-color;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+
+    &:hover {
+      color: $error-red;
+    }
+  }
+}
+
+// ── Inline voice player (received messages) ───────────────────────────────────
+
+.nudge-voice-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+
+  &__play {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 20%);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 30%);
+    }
+  }
+
+  &--sent &__play {
+    background: rgba(0, 0, 0, 15%);
+    color: darken($ui-base-color, 4%);
+
+    &:hover {
+      background: rgba(0, 0, 0, 25%);
+    }
+  }
+
+  &__waveform {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 28px;
+  }
+
+  &__bar {
+    flex: 1;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 45%);
+    height: calc(var(--bar-h, 0.3) * 100%);
+    min-height: 3px;
+    transition: background 0.1s;
+
+    &--played {
+      background: rgba(255, 255, 255, 85%);
+    }
+  }
+
+  &--sent &__bar {
+    background: rgba(0, 0, 0, 20%);
+
+    &--played {
+      background: rgba(0, 0, 0, 55%);
+    }
+  }
+
+  &__time {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 70%);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  &--sent &__time {
+    color: rgba(darken($ui-base-color, 4%), 0.65);
+  }
+}
+
+// ── Milestone banner ──────────────────────────────────────────────────────────
+
+@keyframes nudge-milestone-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.nudge-milestone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(
+    90deg,
+    rgba($highlight-text-color, 0.12),
+    rgba($gold-star, 0.12)
+  );
+  border-bottom: 1px solid rgba($highlight-text-color, 0.2);
+  font-size: 13px;
+  font-weight: 600;
+  color: $primary-text-color;
+  animation: nudge-milestone-in 0.3s ease-out;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: $gold-star;
+  }
+}
+
+// ── Post preview card ─────────────────────────────────────────────────────────
+
+.nudge-post-card {
+  margin: 0 8px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba($highlight-text-color, 0.3);
+  background: rgba($highlight-text-color, 0.06);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px 4px;
+  }
+
+  &__avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__author {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 12px;
+    font-weight: 600;
+    color: $primary-text-color;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__acct {
+    font-size: 11px;
+    color: $dark-text-color;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__dismiss {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $dark-text-color;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 2px;
+
+    &:hover {
+      color: $primary-text-color;
+    }
+  }
+
+  &__body {
+    font-size: 12px;
+    color: $secondary-text-color;
+    padding: 0 10px 6px;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  &__url {
+    display: block;
+    font-size: 10px;
+    color: $highlight-text-color;
+    padding: 0 10px 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 0.7;
+  }
+}
+
+// ── Emoji picker ─────────────────────────────────────────────────────────────
+
+.nudge-emoji-picker {
+  position: relative;
+  display: inline-flex;
+}
+
+.nudge-bubble__react-btn--add {
+  font-size: 13px;
+  font-weight: 600;
+  color: $secondary-text-color;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .nudge-bubble:hover & {
+    opacity: 1;
+  }
+}
+
+.nudge-emoji-picker__popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  padding: 8px;
+  background: $ui-base-color;
+  border: 1px solid lighten($ui-base-color, 8%);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba($base-shadow-color, 0.4);
+  width: 220px;
+}
+
+.nudge-emoji-picker__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: background 0.1s;
+
+  &:hover {
+    background: lighten($ui-base-color, 10%);
+  }
+
+  &--me {
+    background: rgba($highlight-text-color, 0.15);
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+
+.nudge-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+  gap: 10px;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    color: $dark-text-color;
+    opacity: 0.4;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $primary-text-color;
+    margin: 0;
+  }
+
+  &__body {
+    font-size: 13px;
+    color: $dark-text-color;
+    margin: 0;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+}
+
+// ── Waveform bars ─────────────────────────────────────────────────────────────
+
+.nudge-waveform {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 32px;
+
+  &__bar {
+    flex: 1;
+    border-radius: 2px;
+    background: $highlight-text-color;
+    opacity: 0.75;
+    height: calc(var(--bar-h, 0.1) * 100%);
+    min-height: 3px;
+    transition: height 0.06s ease;
+  }
+
+  &--live &__bar {
+    background: $error-red;
+    opacity: 0.85;
+    transition: height 0.03s linear;
+  }
 }
 
 .tag-people-modal {

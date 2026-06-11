@@ -49,7 +49,7 @@ export type NotificationGroupAdminSignUp = BaseNotification<'admin.sign_up'>;
 type EventInvitationData = ApiEventInvitationJSON;
 export interface NotificationGroupEventInvitation
   extends BaseNotification<'event_invitation'> {
-  eventInvitation: EventInvitationData;
+  eventInvitation: EventInvitationData | null;
 }
 
 export type NudgeReactionEmoji = '❤️' | '😂' | '🙌' | '🔥' | '😢';

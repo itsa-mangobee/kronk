@@ -18,10 +18,11 @@ class AccountStatusesFilter
   end
 
   def results
+    return media_tab_results if only_media?
+
     scope = initial_scope
 
     scope.merge!(pinned_scope)     if pinned?
-    scope.merge!(only_media_scope) if only_media?
     scope.merge!(no_replies_scope) if exclude_replies?
     scope.merge!(no_reblogs_scope) if exclude_reblogs?
     scope.merge!(hashtag_scope)    if tagged?
@@ -69,8 +70,27 @@ class AccountStatusesFilter
       )
   end
 
-  def only_media_scope
-    Status.joins(:media_attachments).merge(account.media_attachments).group(Status.arel_table[:id])
+  def media_tab_results
+    return Status.none if account.unavailable?
+    return Status.none if !anonymous? && blocked?
+
+    # Own posts that have media (visibility-filtered for non-authors)
+    own = account.statuses
+    if anonymous?
+      own = own.distributable_visibility
+    elsif !author?
+      own = own.where(visibility: follower? ? %i(public unlisted private) : %i(public unlisted))
+    end
+    own = own.joins(:media_attachments).where(media_attachments: { account_id: account.id })
+
+    # Public/unlisted posts from other accounts where this account is tagged in media
+    tagged_in = Status.joins(media_attachments: :media_tags)
+                      .where(media_tags: { account_id: account.id })
+                      .where(visibility: %i(public unlisted))
+                      .where.not(account_id: account.id)
+
+    all_ids = own.pluck(:id) | tagged_in.pluck(:id)
+    Status.where(id: all_ids)
   end
 
   def no_replies_scope

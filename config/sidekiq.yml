@@ -48,6 +48,10 @@
       cron: '0 0 * * *'
       class: Scheduler::PgheroScheduler
       queue: scheduler
+    nature_observation_scheduler:
+      cron: '0 14 * * *'
+      class: Scheduler::NatureObservationScheduler
+      queue: scheduler
     instance_refresh_scheduler:
       cron: '0 * * * *'
       class: Scheduler::InstanceRefreshScheduler

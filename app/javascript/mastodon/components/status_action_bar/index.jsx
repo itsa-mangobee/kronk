@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import BookmarkIcon from '@/material-icons/400-24px/bookmark-fill.svg?react';
 import BookmarkBorderIcon from '@/material-icons/400-24px/bookmark.svg?react';
 import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
+import PartnerExchangeIcon from '@/material-icons/400-24px/partner_exchange-fill.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import HeartIcon from '@/material-icons/400-24px/favorite-fill.svg?react';
@@ -60,7 +61,8 @@ const messages = defineMessages({
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
   filter: { id: 'status.filter', defaultMessage: 'Filter this post' },
   openOriginalPage: { id: 'account.open_original_page', defaultMessage: 'Open original page' },
-  revokeQuote: { id: 'status.revoke_quote', defaultMessage: 'Remove my post from @{name}’s post' },
+  nudge: { id: 'status.nudge', defaultMessage: 'Nudge @{name}' },
+  revokeQuote: { id: 'status.revoke_quote', defaultMessage: "Remove my post from @{name}'s post" },
   quotePolicyChange: { id: 'status.quote_policy_change', defaultMessage: 'Change who can quote' },
 });
 
@@ -72,6 +74,7 @@ const mapStateToProps = (state, { status }) => {
     statusQuoteState: selectStatusState(state, status),
   });
 };
+
 
 class StatusActionBar extends ImmutablePureComponent {
   static propTypes = {
@@ -247,6 +250,21 @@ class StatusActionBar extends ImmutablePureComponent {
     navigator.clipboard.writeText(url);
   };
 
+  handleNudgeClick = () => {
+    const { status } = this.props;
+    const accountId = status.getIn(['account', 'id']);
+    const statusUrl = status.get('url');
+    const rawBody = (status.get('content') ?? '').replace(/<[^>]*>/g, '');
+    const statusBody = rawBody.length > 80 ? `${rawBody.slice(0, 80)}…` : rawBody;
+    this.props.history.push(`/nudges/${accountId}`, {
+      attachStatusUrl: statusUrl,
+      attachStatusBody: statusBody || null,
+      attachStatusAuthorName: status.getIn(['account', 'display_name']) || status.getIn(['account', 'username']),
+      attachStatusAuthorAcct: status.getIn(['account', 'acct']),
+      attachStatusAuthorAvatar: status.getIn(['account', 'avatar']),
+    });
+  };
+
   render () {
     const { status, relationship, statusQuoteState, quotedAccountId, contextType, intl, withDismiss, withCounters, scrollKey } = this.props;
     const { signedIn, permissions } = this.props.identity;
@@ -401,6 +419,11 @@ class StatusActionBar extends ImmutablePureComponent {
         <div className='status__action-bar__button-wrapper'>
           <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={bookmarkTitle} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
         </div>
+        {signedIn && !writtenByMe && (
+          <div className='status__action-bar__button-wrapper'>
+            <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.nudge, { name: account.get('username') })} icon='partner_exchange' iconComponent={PartnerExchangeIcon} onClick={this.handleNudgeClick} />
+          </div>
+        )}
         <RemoveQuoteHint className='status__action-bar__button-wrapper' canShowHint={shouldShowQuoteRemovalHint}>
           {(dismissQuoteHint) => (
             <Dropdown

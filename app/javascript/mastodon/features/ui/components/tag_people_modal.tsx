@@ -20,10 +20,6 @@ const messages = defineMessages({
     defaultMessage: 'Search for a person…',
   },
   done: { id: 'tag_people.done', defaultMessage: 'Done' },
-  clickToPlace: {
-    id: 'tag_people.click_to_place',
-    defaultMessage: 'Click the image to place a tag',
-  },
   remove: { id: 'tag_people.remove', defaultMessage: 'Remove' },
 });
 
@@ -76,28 +72,10 @@ export const TagPeopleModal: React.FC<{
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const [tags, setTags] = useState<PendingTag[]>(() => getPendingTags(mediaId));
-  const [pendingPin, setPendingPin] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<ApiAccountJSON[]>([]);
   const [searching, setSearching] = useState(false);
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const imgRef = useRef<HTMLDivElement>(null);
-
-  const handleImageClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!imgRef.current) return;
-      const rect = imgRef.current.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      setPendingPin({ x, y });
-      setQuery('');
-      setSuggestions([]);
-    },
-    [],
-  );
 
   const handleQueryChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,28 +106,20 @@ export const TagPeopleModal: React.FC<{
 
   const handleSelectAccount = useCallback(
     (account: ApiAccountJSON) => {
-      if (!pendingPin) return;
-      const already = tags.find((t) => t.accountId === account.id);
-      if (already) {
-        setPendingPin(null);
-        setQuery('');
-        setSuggestions([]);
-        return;
-      }
+      if (tags.find((t) => t.accountId === account.id)) return;
       const newTag: PendingTag = {
         accountId: account.id,
         accountName: account.display_name || account.username,
-        x: pendingPin.x,
-        y: pendingPin.y,
+        x: 0.5,
+        y: 0.5,
       };
       const next = [...tags, newTag];
       setTags(next);
       setPendingTags(mediaId, next);
-      setPendingPin(null);
       setQuery('');
       setSuggestions([]);
     },
-    [pendingPin, tags, mediaId],
+    [tags, mediaId],
   );
 
   const handleRemoveTag = useCallback(
@@ -165,13 +135,6 @@ export const TagPeopleModal: React.FC<{
     dispatch(closeModal({ modalType: 'TAG_PEOPLE', ignoreFocus: false }));
   }, [dispatch]);
 
-  const handleImageKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === 'Enter') e.currentTarget.click();
-    },
-    [],
-  );
-
   return (
     <div className='modal-root__modal tag-people-modal'>
       <div className='tag-people-modal__header'>
@@ -179,68 +142,33 @@ export const TagPeopleModal: React.FC<{
       </div>
 
       <div className='tag-people-modal__image-wrapper'>
-        <div
-          ref={imgRef}
-          className='tag-people-modal__image'
-          onClick={handleImageClick}
-          role='button'
-          tabIndex={0}
-          aria-label={intl.formatMessage(messages.clickToPlace)}
-          onKeyDown={handleImageKeyDown}
-        >
-          <img src={previewUrl} alt='' draggable={false} />
+        <img
+          src={previewUrl}
+          alt=''
+          draggable={false}
+          className='tag-people-modal__preview'
+        />
+      </div>
 
-          {tags.map((tag) => (
-            <div
-              key={tag.accountId}
-              className='tag-people-modal__pin'
-              style={{
-                left: `${tag.x * 100}%`,
-                top: `${tag.y * 100}%`,
-              }}
-            >
-              <span className='tag-people-modal__pin-label'>
-                {tag.accountName}
-              </span>
-            </div>
-          ))}
-
-          {pendingPin && (
-            <div
-              className='tag-people-modal__pin tag-people-modal__pin--pending'
-              style={{
-                left: `${pendingPin.x * 100}%`,
-                top: `${pendingPin.y * 100}%`,
-              }}
-            />
-          )}
-        </div>
-
-        {pendingPin && (
-          <div className='tag-people-modal__search'>
-            <input
-              // eslint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
-              type='text'
-              value={query}
-              onChange={handleQueryChange}
-              placeholder={intl.formatMessage(messages.searchPlaceholder)}
-              className='tag-people-modal__search-input'
-            />
-            {searching && <div className='tag-people-modal__search-loading' />}
-            {suggestions.length > 0 && (
-              <ul className='tag-people-modal__suggestions'>
-                {suggestions.map((acct) => (
-                  <li key={acct.id}>
-                    <SuggestionItem
-                      account={acct}
-                      onSelect={handleSelectAccount}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+      <div className='tag-people-modal__search'>
+        <input
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+          type='text'
+          value={query}
+          onChange={handleQueryChange}
+          placeholder={intl.formatMessage(messages.searchPlaceholder)}
+          className='tag-people-modal__search-input'
+        />
+        {searching && <div className='tag-people-modal__search-loading' />}
+        {suggestions.length > 0 && (
+          <ul className='tag-people-modal__suggestions'>
+            {suggestions.map((acct) => (
+              <li key={acct.id}>
+                <SuggestionItem account={acct} onSelect={handleSelectAccount} />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 

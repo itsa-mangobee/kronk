@@ -267,12 +267,27 @@ export function submitCompose(successCallback) {
 
       if (statusId === null) {
         const pendingTags = getAllPendingTags();
+        clearAllPendingTags();
+        const tagPromises = [];
         pendingTags.forEach((tags, mediaId) => {
           tags.forEach((tag) => {
-            apiAddMediaTag(mediaId, tag.accountId, tag.x, tag.y).catch(() => {});
+            tagPromises.push(apiAddMediaTag(mediaId, tag.accountId, tag.x, tag.y));
           });
         });
-        clearAllPendingTags();
+        if (tagPromises.length > 0) {
+          Promise.allSettled(tagPromises).then((results) => {
+            const failed = results.filter((r) => r.status === 'rejected').length;
+            if (failed > 0) {
+              dispatch(showAlert({
+                message: {
+                  id: 'compose.tags_failed',
+                  defaultMessage: '{count, plural, one {# tag} other {# tags}} could not be saved after posting. Please tag them manually.',
+                },
+                values: { count: failed },
+              }));
+            }
+          }).catch(() => undefined);
+        }
       }
 
       if (typeof successCallback === 'function') {
